@@ -1,0 +1,15 @@
+﻿# ROOT is the country opening the board.
+vvv_can_open_battle = {
+    is_ai = no
+    exists = scope:vvv_battle
+    scope:vvv_battle = {
+        OR = {
+            combat_attacker = {
+                any_participating_units = { owner = root is_army = yes in_combat = yes }
+            }
+            combat_defender = {
+                any_participating_units = { owner = root is_army = yes in_combat = yes }
+            }
+        }
+    }
+}

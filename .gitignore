@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+dist/
+local-reference/
+*.log
+# This override is generated from the player's own installation.
+in_game/gui/battle_lateralview.gui
+vvv-install.json
+*.bak

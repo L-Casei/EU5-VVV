@@ -1,0 +1,37 @@
+﻿vvv_select_regiment = {
+    scope = country
+    saved_scopes = { vvv_battle vvv_regiment }
+    is_shown = { always = yes }
+    is_valid = { vvv_can_select_regiment = yes }
+    effect = {
+        if = {
+            limit = { vvv_can_select_regiment = yes }
+            set_variable = {
+                name = vvv_selected_regiment
+                value = scope:vvv_regiment
+            }
+        }
+    }
+}
+
+# An instantaneous change avoids leaving a combat modifier on a marching army.
+# Cooldown belongs to the regiment, not the selected country/UI window.
+vvv_rally_regiment = {
+    scope = country
+    saved_scopes = { vvv_battle vvv_regiment }
+    is_shown = { always = yes }
+    is_valid = { vvv_can_rally_regiment = yes }
+    effect = {
+        if = {
+            limit = { vvv_can_rally_regiment = yes }
+            scope:vvv_regiment = {
+                add_subunit_morale = 0.10
+                set_variable = {
+                    name = vvv_rally_cooldown
+                    value = yes
+                    days = 7
+                }
+            }
+        }
+    }
+}

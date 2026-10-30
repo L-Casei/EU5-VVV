@@ -1,0 +1,26 @@
+name: Validate and package
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Check native assets and localizations
+        run: python -m tools.validate
+      - name: Exercise patching, installation and packaging
+        run: python -m unittest discover -s tests -v
+      - name: Build installation bundle
+        run: python -m tools.package
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: EU5-VVV-0.1.0-alpha
+          path: dist/*.zip
+          if-no-files-found: error

@@ -1,0 +1,23 @@
+﻿types VVVBattleEntryTypes
+{
+    # Instantiated inside panel_content by tools.install, never on the HUD.
+    type vvv_battle_entry = button {
+        name = "vvv_battle_entry"
+        using = button_regular_texture
+        using = button_common_template
+        layoutpolicy_horizontal = expanding
+        size = { -1 32 }
+        margin_bottom = 6
+        text = "VVV_OPEN_BOARD"
+        visible = "[And(Combat.IsActive, Not(Combat.IsNavalCombat))]"
+        enabled = "[GetScriptedGui('vvv_open_battle').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).End)]"
+        onclick = "[GetScriptedGui('vvv_open_battle').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).End)]"
+        onclick = "[GetVariableSystem.Set('vvv_open_battle', Combat.GetKey)]"
+        state = {
+            name = _hide
+            on_start = "[GetVariableSystem.Clear('vvv_open_battle')]"
+        }
+        tooltip = "VVV_OPEN_BOARD_TT"
+        tooltipwidget = { BasicFunctionalTooltip = {} }
+    }
+}

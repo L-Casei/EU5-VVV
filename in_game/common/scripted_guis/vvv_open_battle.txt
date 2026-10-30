@@ -1,0 +1,15 @@
+﻿# BattleView belongs to the native lateralview context, not a global getter.
+# Capture its combat handle for the independent central window.
+vvv_open_battle = {
+    scope = country
+    saved_scopes = { vvv_battle }
+    is_shown = { always = yes }
+    is_valid = { vvv_can_open_battle = yes }
+    effect = {
+        if = {
+            limit = { vvv_can_open_battle = yes }
+            set_variable = { name = vvv_current_battle value = scope:vvv_battle }
+            remove_variable = vvv_selected_regiment
+        }
+    }
+}

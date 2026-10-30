@@ -1,0 +1,44 @@
+﻿# ROOT is the country issuing the order. Both arguments come from the GUI.
+# The effect repeats these checks: a disabled GUI button is not a game-state guard.
+vvv_can_select_regiment = {
+    is_ai = no
+    is_multiplayer_session = no
+    exists = scope:vvv_battle
+    exists = scope:vvv_regiment
+    scope:vvv_regiment = {
+        owner = root
+        controller = root
+        subunit_strength > 0
+        owning_unit = {
+            is_army = yes
+            in_combat = yes
+            combat = scope:vvv_battle
+        }
+    }
+    # A retreated/captured regiment still has an owning army, so membership in
+    # a currently fighting section/reserve is checked separately.
+    scope:vvv_battle = {
+        OR = {
+            combat_attacker = { vvv_side_contains_regiment = yes }
+            combat_defender = { vvv_side_contains_regiment = yes }
+        }
+    }
+}
+
+# This reads native membership; it does not move units between native flanks.
+vvv_side_contains_regiment = {
+    OR = {
+        any_center = { this = scope:vvv_regiment }
+        any_left_flank = { this = scope:vvv_regiment }
+        any_right_flank = { this = scope:vvv_regiment }
+        any_reserves = { this = scope:vvv_regiment }
+    }
+}
+
+vvv_can_rally_regiment = {
+    vvv_can_select_regiment = yes
+    scope:vvv_regiment = {
+        NOT = { has_variable = vvv_rally_cooldown }
+        subunit_morale_percentage < 1
+    }
+}
