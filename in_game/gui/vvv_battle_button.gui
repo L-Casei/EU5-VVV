@@ -10,13 +10,11 @@
         margin_bottom = 6
         text = "VVV_OPEN_BOARD"
         visible = "[And(Combat.IsActive, Not(Combat.IsNavalCombat))]"
-        enabled = "[GetScriptedGui('vvv_open_battle').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).End)]"
-        onclick = "[GetScriptedGui('vvv_open_battle').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).End)]"
+        enabled = "[Or(Combat.GetAttacker.IsPlayerInCombat, Combat.GetDefender.IsPlayerInCombat)]"
+        # Show the shell before asking the game to capture a combat handle.
+        # A rejected/delayed handoff must not make the click silently do nothing.
         onclick = "[GetVariableSystem.Set('vvv_open_battle', Combat.GetKey)]"
-        state = {
-            name = _hide
-            on_start = "[GetVariableSystem.Clear('vvv_open_battle')]"
-        }
+        onclick = "[GetScriptedGui('vvv_open_battle').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).End)]"
         tooltip = "VVV_OPEN_BOARD_TT"
         tooltipwidget = { BasicFunctionalTooltip = {} }
     }

@@ -1,14 +1,26 @@
 # Veni, Vidi, Vici — EU5
 
-**Target: Europa Universalis V 1.4.x · Version: 0.1.0-alpha**
+**Target: Europa Universalis V 1.4.x · Version: 0.1.1-alpha**
 
 VVV aims to add a 2D command board opened **from the active battle window**.
 Orders on the board act on the regiments participating in that battle; EU5's
 normal battle view and native combat continue to exist.
 
-This is the first integration alpha. **It has not been run inside EU5 yet.**
-Static checks and installer tests cannot establish that the game loads the GUI,
-passes combat scopes correctly, or applies the order during a live battle.
+This is an integration alpha. **The battle button has been confirmed in EU5.**
+The command board and rally order still need in-game validation. Static checks
+and installer tests cannot establish rendering or combat behavior.
+
+## Actualización 0.1.1: botón sin respuesta
+
+La apertura del marco ya no depende de recibir antes los datos del combate.
+El botón solicita primero la ventana y después captura la batalla. Si falla
+esa captura, el panel muestra un mensaje en lugar de quedarse invisible.
+Los datos se crean desde una lista de referencias de combate y la recuperación
+de Reagrupar se guarda en el país, con una entrada por regimiento.
+
+Para actualizar: cierra EU5, descarga el ZIP nuevo, extráelo y vuelve a ejecutar
+`Install-VVV.cmd` desde esa copia. Después reinicia el juego. El siguiente paso
+es comprobar que el clic abre el marco y que las tropas aparecen dentro.
 
 ## Qué incorpora esta primera versión
 
@@ -44,6 +56,10 @@ Las órdenes de esta alpha se desactivan en multijugador.
    Busca **Mando táctico** en la parte superior del contenido de su ventana.
 7. Abre el tablero, selecciona una ficha propia con moral inferior al máximo
    y prueba **Reagrupar**. Comprueba el resultado siguiendo [esta guía](docs/TESTING.md).
+
+Si el marco muestra un aviso de datos pendientes, ciérralo y vuelve a abrirlo.
+Si continúa, comparte el fragmento de `error.log` relacionado con VVV. En esta
+versión el cierre del tablero es explícito, mediante su botón Cerrar.
 
 Si no detecta tu juego, abre una terminal en esta carpeta y ejecuta:
 

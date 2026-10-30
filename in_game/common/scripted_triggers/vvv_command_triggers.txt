@@ -37,8 +37,13 @@ vvv_side_contains_regiment = {
 
 vvv_can_rally_regiment = {
     vvv_can_select_regiment = yes
+    NOT = {
+        is_key_in_variable_map = {
+            name = vvv_rally_cooldowns
+            target = scope:vvv_regiment
+        }
+    }
     scope:vvv_regiment = {
-        NOT = { has_variable = vvv_rally_cooldown }
         subunit_morale_percentage < 1
     }
 }

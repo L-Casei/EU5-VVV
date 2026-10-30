@@ -143,7 +143,7 @@ def install(game_dir: Path, mod_dir: Path, source_root: Path = ROOT) -> dict:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     manifest = {
         "mod_id": "eu5_vvv",
-        "version": "0.1.0-alpha",
+        "version": json.loads(desired[".metadata/metadata.json"].decode("utf-8-sig"))["version"],
         "source_gui": str(source),
         "source_sha256": sha256(source_bytes),
         "installed_utc": stamp,

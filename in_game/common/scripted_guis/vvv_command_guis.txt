@@ -15,7 +15,8 @@
 }
 
 # An instantaneous change avoids leaving a combat modifier on a marching army.
-# Cooldown belongs to the regiment, not the selected country/UI window.
+# EU5 sub_unit scopes cannot store variables. Keep a timed country map keyed
+# by the exact regiment; changing selection does not reset its recovery.
 vvv_rally_regiment = {
     scope = country
     saved_scopes = { vvv_battle vvv_regiment }
@@ -26,11 +27,12 @@ vvv_rally_regiment = {
             limit = { vvv_can_rally_regiment = yes }
             scope:vvv_regiment = {
                 add_subunit_morale = 0.10
-                set_variable = {
-                    name = vvv_rally_cooldown
-                    value = yes
-                    days = 7
-                }
+            }
+            add_to_variable_map = {
+                name = vvv_rally_cooldowns
+                key = scope:vvv_regiment
+                value = yes
+                days = 7
             }
         }
     }

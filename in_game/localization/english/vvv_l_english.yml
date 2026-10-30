@@ -7,6 +7,7 @@
  VVV_FRIENDLY: "OUR FORCES"
  VVV_FIELD_CAPTION: "ORDER OF BATTLE"
  VVV_COMMAND: "COMMAND"
+ VVV_WAITING_BATTLE: "The command board is open, but data for this battle has not arrived yet.\n\nClose it and open Tactical command again. If this message remains, share the game's error.log so the battle connection can be checked."
  VVV_SELECT_HINT: "Select one of your regiments to issue an order. Allied and enemy troops can be inspected."
  VVV_RALLY: "Rally"
  VVV_RALLY_TT: "Recover 0.10 morale in the selected regiment. Requires missing morale, active participation and no rally cooldown."

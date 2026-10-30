@@ -7,6 +7,7 @@
  VVV_FRIENDLY: "NUESTRAS FUERZAS"
  VVV_FIELD_CAPTION: "ORDEN DE BATALLA"
  VVV_COMMAND: "MANDO"
+ VVV_WAITING_BATTLE: "El tablero está abierto, pero todavía no se han recibido los datos de esta batalla.\n\nCiérralo y pulsa Mando táctico de nuevo. Si el mensaje continúa, comparte el archivo error.log del juego para revisar la conexión con la batalla."
  VVV_SELECT_HINT: "Selecciona uno de tus regimientos para dar una orden. Puedes consultar las tropas aliadas y enemigas."
  VVV_RALLY: "Reagrupar"
  VVV_RALLY_TT: "Recupera 0,10 de moral en el regimiento seleccionado. Requiere moral incompleta, participación activa y haber completado la recuperación anterior."

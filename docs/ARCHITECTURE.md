@@ -10,16 +10,23 @@ An unfamiliar layout fails with a clear error instead of guessing a hook point.
 
 The entry point receives `BattleView.GetCombat` inside the native lateralview.
 `BattleView` is not assumed to be globally accessible from a separate window.
-Opening the board validates participation, stores the combat handle on the
-issuing country as `vvv_current_battle`, and stores its key in the client-only
-`GetVariableSystem`. The independent central window downcasts that saved scope
-with `Scope.GetCombat`. Its visibility requires an active land battle, player
-participation and a matching open key. The native entry's hide animation and
-the board's hide animation clear the local key; no persistent HUD button exists.
+The first click action stores the battle key in the client-only
+`GetVariableSystem`. The independent shell's visibility depends only on this
+UI flag, so it can open while the game-state handoff is still absent. Neither
+the shell nor the entry clears that flag from a hide animation. The close
+button clears it explicitly; no permanent HUD button exists.
+
+The second click action validates country participation, stores the combat
+handle on the country as `vvv_current_battle`, and replaces `vvv_board_battles`
+with a one-item variable list. A widget datamodel creates the typed content
+from that list using `Scope.GetCombat`. The shell itself never caches an empty
+combat data context at startup. Live content requires an active matching combat
+and player participation; a separate status message covers missing/stale data.
 
 Switching the native view must never redirect an already captured combat
 handle. Reopening from a different battle explicitly replaces the handle and
-clears selection. Exact close/switch animation timing needs an in-game test.
+clears selection. Until lifecycle behavior is verified, closing is explicit.
+If the captured battle ends, live data is hidden and the status message appears.
 
 The two sides are rendered through `CombatSide.GetUnits`, then `Unit.GetSubUnits`.
 These are real game handles. Cards are grouped by owning army and do not attempt
@@ -43,9 +50,12 @@ Both `is_valid` and the effect itself call the validation trigger:
 5. The regiment belongs to a fighting section or reserve on one side; a
    retreated/captured regiment must not pass merely because its army is present.
 
-Reagrupar additionally requires missing morale and no cooldown variable. The
-effect adds `0.10` morale directly to that one regiment and sets a seven-day
-variable on it. The effect is instantaneous, so no temporary discipline/tactics
+Reagrupar additionally requires missing morale and no active entry for the
+regiment in the issuing country's `vvv_rally_cooldowns` map. The effect adds
+`0.10` morale directly to that regiment and adds a seven-day map entry keyed by
+its scope. Exported EU5 scope capabilities mark `sub_unit` as unable to store
+variables; all persistent state therefore stays on the country. The effect is
+instantaneous, so no temporary discipline/tactics
 modifier can leak into a subsequent march or unrelated battle. Repeated clicks
 must be rejected by the game-state check after the first successful execution.
 
@@ -55,8 +65,9 @@ in-game check. Do not interpret the order as balanced gameplay yet.
 ## Authority and future tactical simulation
 
 EU5 owns casualties, reinforcement, retreat and native combat resolution.
-VVV currently owns a captured combat handle, selection and a morale order. The board does not yet have
-persistent coordinates, pathfinding, arcs, ranges, terrain cells or tactical AI.
+VVV currently owns a captured combat handle, selection and a morale order.
+The board does not yet have persistent coordinates, pathfinding, arcs, ranges,
+terrain cells or tactical AI.
 
 Future board positions need an explicit, tested mapping to combat effects.
 Moving an icon must never be presented as a native regiment moving freely

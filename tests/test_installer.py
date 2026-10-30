@@ -82,6 +82,9 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(self.source.read_bytes(), before)
         self.assertIn(BEGIN, (self.target / GUI_REL).read_text(encoding='utf-8-sig'))
         self.assertTrue((self.target / '.metadata/metadata.json').is_file())
+        metadata = json.loads((self.target / '.metadata/metadata.json').read_text(encoding='utf-8-sig'))
+        manifest = json.loads((self.target / MANIFEST).read_text())
+        self.assertEqual(manifest['version'], metadata['version'])
         self.assertEqual(install(self.game, self.target)['status'], 'unchanged')
 
     def test_unknown_existing_destination_is_preserved(self):

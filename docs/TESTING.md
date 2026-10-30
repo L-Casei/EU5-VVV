@@ -1,7 +1,8 @@
 # Prueba en EU5 1.4
 
-Esta alpha necesita su primera prueba real en el juego. Los tests de Python
-comprueban el instalador; no ejecutan el motor de EU5.
+El botón ya se ha visto dentro del juego. La apertura corregida en 0.1.1,
+la lectura de datos y la orden necesitan pruebas. Los tests de Python no
+ejecutan el motor de EU5.
 
 ## Instalación
 
@@ -18,6 +19,9 @@ enganche. No añadas ese archivo generado al repositorio público.
 
 1. Abre una batalla terrestre en la que participes como atacante.
 2. Pulsa Mando táctico desde su ventana.
+   El marco debe abrirse incluso si la captura de datos aún no ha llegado.
+   Si ves un aviso de datos pendientes, cierra el panel y vuelve a abrirlo.
+   Si el aviso permanece, comparte los errores de VVV del registro del juego.
 3. Comprueba que tu bando está abajo y el enemigo arriba.
 4. Compara los regimientos, cantidades y moral con la interfaz normal.
 5. Prueba el scroll con más de seis regimientos y más de un ejército.
@@ -39,13 +43,14 @@ enganche. No añadas ese archivo generado al repositorio público.
 
 ## Ciclo de vida
 
-- Cierra el tablero y la ventana de batalla; no debe reaparecer solo.
-- Cambia de batalla: el tablero debe cerrarse al ocultarse su entrada. Si el
-  juego reutiliza la ventana sin ocultarla, el tablero debe seguir vinculado a
-  su batalla original; nunca debe redirigir órdenes. Al abrirlo desde la nueva
-  batalla, la selección anterior debe limpiarse.
+- Cierra el tablero con su botón Cerrar; no debe reaparecer solo.
+- Cambia de batalla: el tablero sigue vinculado a su batalla original hasta
+  cerrarlo o abrirlo desde otra batalla. Nunca debe redirigir órdenes por un
+  cambio de selección externa. Al abrirlo desde la nueva batalla, la selección
+  anterior debe limpiarse.
 - Comprueba refuerzos, retirada de un ejército, fin de batalla y destrucción del
-  seleccionado. Los datos ausentes no deben crear errores repetidos.
+  seleccionado. Al terminar el combate se ocultan sus datos y aparece el aviso;
+  cierra el marco explícitamente. Los datos ausentes no deben crear errores repetidos.
 - Guarda y carga con una selección y una recuperación activas.
 - En multijugador el tablero puede observarse, pero las órdenes están desactivadas.
 

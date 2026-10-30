@@ -21,6 +21,6 @@ jobs:
         run: python -m tools.package
       - uses: actions/upload-artifact@v7.0.2
         with:
-          name: EU5-VVV-0.1.0-alpha
+          name: EU5-VVV-install-bundle
           path: dist/*.zip
           if-no-files-found: error

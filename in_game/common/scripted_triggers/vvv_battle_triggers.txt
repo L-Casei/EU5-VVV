@@ -5,10 +5,10 @@ vvv_can_open_battle = {
     scope:vvv_battle = {
         OR = {
             combat_attacker = {
-                any_participating_units = { owner = root is_army = yes in_combat = yes }
+                any_participating_countries = { this = root }
             }
             combat_defender = {
-                any_participating_units = { owner = root is_army = yes in_combat = yes }
+                any_participating_countries = { this = root }
             }
         }
     }

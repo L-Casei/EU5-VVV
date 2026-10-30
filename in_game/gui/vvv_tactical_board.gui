@@ -99,30 +99,145 @@
             scrollbar_vertical = { using = Scrollbar_Vertical }
         }
     }
+    # Instantiated from a variable-list item so the typed combat context is
+    # created when the handoff arrives, not cached while empty at game startup.
+    type vvv_battle_content = widget {
+        size = { 1104 704 }
+        alwaystransparent = yes
+        visible = "[And3(Combat.IsActive, GetVariableSystem.HasValue('vvv_open_battle', Combat.GetKey), Or(Combat.GetAttacker.IsPlayerInCombat, Combat.GetDefender.IsPlayerInCombat))]"
+
+        text_single = {
+            position = { 30 48 }
+            size = { 950 24 }
+            fontsize = 14
+            autoresize = no
+            text = "[Combat.GetName] · [Combat.GetLocation.GetTopography.GetName] · [Combat.GetLocation.GetVegetation.GetName]"
+        }
+
+        text_single = {
+            position = { 34 99 }
+            size = { 740 20 }
+            autoresize = no
+            fontsize = 12
+            text = "VVV_ENEMY"
+        }
+
+        vvv_side_roster = {
+            position = { 34 124 }
+            visible = "[Combat.GetAttacker.IsPlayerInCombat]"
+            datacontext = "[Combat.GetDefender]"
+        }
+
+        vvv_side_roster = {
+            position = { 34 124 }
+            visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
+            datacontext = "[Combat.GetAttacker]"
+        }
+
+        text_single = {
+            position = { 34 339 }
+            size = { 740 20 }
+            autoresize = no
+            align = center|nobaseline
+            fontsize = 12
+            text = "VVV_FIELD_CAPTION"
+        }
+
+        text_single = {
+            position = { 34 370 }
+            size = { 740 20 }
+            autoresize = no
+            fontsize = 12
+            text = "VVV_FRIENDLY"
+        }
+
+        vvv_side_roster = {
+            position = { 34 394 }
+            visible = "[Combat.GetAttacker.IsPlayerInCombat]"
+            datacontext = "[Combat.GetAttacker]"
+        }
+
+        vvv_side_roster = {
+            position = { 34 394 }
+            visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
+            datacontext = "[Combat.GetDefender]"
+        }
+
+        text_single = {
+            position = { 832 99 }
+            size = { 238 26 }
+            autoresize = no
+            fontsize = 18
+            text = "VVV_COMMAND"
+        }
+
+        vbox = {
+            position = { 832 142 }
+            size = { 238 380 }
+            spacing = 12
+            visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End))]"
+            text_multi = {
+                layoutpolicy_horizontal = expanding
+                autoresize = yes
+                text = "VVV_SELECT_HINT"
+            }
+        }
+
+        vbox = {
+            position = { 832 142 }
+            size = { 238 410 }
+            spacing = 12
+            visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End)]"
+            datacontext = "[GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit]"
+            text_multi = {
+                layoutpolicy_horizontal = expanding
+                autoresize = yes
+                fontsize = 18
+                text = "[SubUnit.GetNameWithNoTooltip]"
+            }
+            text_single = {
+                size = { 238 24 }
+                autoresize = no
+                text = "[SubUnit.GetStrength|0] · [SubUnit.GetMoralePercent|0%]"
+            }
+            button = {
+                using = button_regular_texture
+                using = button_common_template
+                size = { 238 43 }
+                text = "VVV_RALLY"
+                enabled = "[GetScriptedGui('vvv_rally_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
+                onclick = "[GetScriptedGui('vvv_rally_regiment').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
+                tooltip = "VVV_RALLY_TT"
+                tooltipwidget = { BasicFunctionalTooltip = {} }
+            }
+            text_multi = {
+                layoutpolicy_horizontal = expanding
+                autoresize = yes
+                text = "VVV_RALLY_EFFECT"
+            }
+            text_multi = {
+                visible = "[GetPlayer.MakeScope.GetVariableFromVariableMap('vvv_rally_cooldowns', SubUnit.MakeScope).IsSet]"
+                layoutpolicy_horizontal = expanding
+                autoresize = yes
+                text = "VVV_RALLY_COOLDOWN"
+            }
+        }
+    }
 }
 
 window = {
     name = "vvv_tactical_board"
-    datacontext = "[GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat]"
     layer = top
     parentanchor = center
     widgetanchor = center
     size = { 1104 704 }
     movable = yes
     resizable = no
-    allow_outside = no
+    allow_outside = yes
     filter_mouse = all
-    visible_at_creation = no
-    visible = "[And4(Combat.IsActive, Not(Combat.IsNavalCombat), GetVariableSystem.HasValue('vvv_open_battle', Combat.GetKey), Or(Combat.GetAttacker.IsPlayerInCombat, Combat.GetDefender.IsPlayerInCombat))]"
+    # Opening the shell is client-only and never waits for a script result.
+    visible = "[GetVariableSystem.Exists('vvv_open_battle')]"
     background = { texture = "gfx/interface/vvv/command_board.dds" }
-
-    # UI-only state is keyed to the open battle. No command is dispatched by
-    # animations/polling. This is the captured combat, never an unrelated current
-    # lateralview context. The entry widget clears the key when it is hidden.
-    state = {
-        name = _hide
-        on_start = "[GetVariableSystem.Clear('vvv_open_battle')]"
-    }
 
     text_single = {
         position = { 28 14 }
@@ -131,13 +246,7 @@ window = {
         autoresize = no
         text = "VVV_BOARD_TITLE"
     }
-    text_single = {
-        position = { 30 48 }
-        size = { 950 24 }
-        fontsize = 14
-        autoresize = no
-        text = "[Combat.GetName] · [Combat.GetLocation.GetTopography.GetName] · [Combat.GetLocation.GetVegetation.GetName]"
-    }
+
     button = {
         using = button_regular_texture
         using = button_common_template
@@ -147,112 +256,34 @@ window = {
         onclick = "[GetVariableSystem.Clear('vvv_open_battle')]"
     }
 
-    text_single = {
-        position = { 34 99 }
-        size = { 740 20 }
-        autoresize = no
-        fontsize = 12
-        text = "VVV_ENEMY"
-    }
-    vvv_side_roster = {
-        position = { 34 124 }
-        visible = "[Combat.GetAttacker.IsPlayerInCombat]"
-        datacontext = "[Combat.GetDefender]"
-    }
-    vvv_side_roster = {
-        position = { 34 124 }
-        visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
-        datacontext = "[Combat.GetAttacker]"
-    }
-    text_single = {
-        position = { 34 339 }
-        size = { 740 20 }
-        autoresize = no
-        align = center|nobaseline
-        fontsize = 12
-        text = "VVV_FIELD_CAPTION"
-    }
-    text_single = {
-        position = { 34 370 }
-        size = { 740 20 }
-        autoresize = no
-        fontsize = 12
-        text = "VVV_FRIENDLY"
-    }
-    vvv_side_roster = {
-        position = { 34 394 }
-        visible = "[Combat.GetAttacker.IsPlayerInCombat]"
-        datacontext = "[Combat.GetAttacker]"
-    }
-    vvv_side_roster = {
-        position = { 34 394 }
-        visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
-        datacontext = "[Combat.GetDefender]"
-    }
-
-    text_single = {
-        position = { 832 99 }
-        size = { 238 26 }
-        autoresize = no
-        fontsize = 18
-        text = "VVV_COMMAND"
-    }
-    vbox = {
-        position = { 832 142 }
-        size = { 238 380 }
-        spacing = 12
-        visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End))]"
-        text_multi = {
-            layoutpolicy_horizontal = expanding
-            autoresize = yes
-            text = "VVV_SELECT_HINT"
-        }
-    }
-    vbox = {
-        position = { 832 142 }
-        size = { 238 410 }
-        spacing = 12
-        visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End)]"
-        datacontext = "[GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit]"
-        text_multi = {
-            layoutpolicy_horizontal = expanding
-            autoresize = yes
-            fontsize = 18
-            text = "[SubUnit.GetNameWithNoTooltip]"
-        }
-        text_single = {
-            size = { 238 24 }
-            autoresize = no
-            text = "[SubUnit.GetStrength|0] · [SubUnit.GetMoralePercent|0%]"
-        }
-        button = {
-            using = button_regular_texture
-            using = button_common_template
-            size = { 238 43 }
-            text = "VVV_RALLY"
-            enabled = "[GetScriptedGui('vvv_rally_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
-            onclick = "[GetScriptedGui('vvv_rally_regiment').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
-            tooltip = "VVV_RALLY_TT"
-            tooltipwidget = { BasicFunctionalTooltip = {} }
-        }
-        text_multi = {
-            layoutpolicy_horizontal = expanding
-            autoresize = yes
-            text = "VVV_RALLY_EFFECT"
-        }
-        text_multi = {
-            visible = "[SubUnit.MakeScope.GetVariable('vvv_rally_cooldown').IsSet]"
-            layoutpolicy_horizontal = expanding
-            autoresize = yes
-            text = "VVV_RALLY_COOLDOWN"
-        }
-    }
-
     text_multi = {
         position = { 32 634 }
         size = { 1036 48 }
         autoresize = no
         fontsize = 13
         text = "VVV_ALPHA_SCOPE"
+    }
+
+    widget = {
+        name = "vvv_live_battle_model"
+        size = { 1104 704 }
+        alwaystransparent = yes
+        datamodel = "[GetPlayer.MakeScope.GetList('vvv_board_battles')]"
+        item = {
+            vvv_battle_content = { datacontext = "[Scope.GetCombat]" }
+        }
+    }
+
+    widget = {
+        name = "vvv_battle_handoff_status"
+        position = { 40 150 }
+        size = { 730 330 }
+        visible = "[Not(And3(GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.IsActive, GetVariableSystem.HasValue('vvv_open_battle', GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetKey), Or(GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetAttacker.IsPlayerInCombat, GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetDefender.IsPlayerInCombat)))]"
+        text_multi = {
+            size = { 710 150 }
+            autoresize = no
+            fontsize = 18
+            text = "VVV_WAITING_BATTLE"
+        }
     }
 }

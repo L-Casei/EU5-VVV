@@ -1,7 +1,7 @@
 {
   "name": "Veni, Vidi, Vici — Tactical Command",
   "id": "eu5_vvv",
-  "version": "0.1.0-alpha",
+  "version": "0.1.1-alpha",
   "game_id": "eu5",
   "supported_game_version": "1.4.*",
   "short_description": "A battle-window entry point for a live 2D tactical command board.",
