@@ -6,10 +6,13 @@
     "unit": true,
     "sub_unit": false,
     "combat": false,
-    "combat_side": false
+    "combat_side": false,
+    "sub_unit_category": false
   },
   "vvv_scope_arguments": {
     "vvv_regiment": "sub_unit",
-    "vvv_battle": "combat"
+    "vvv_battle": "combat",
+    "vvv_category": "sub_unit_category",
+    "vvv_formation_candidate": "sub_unit"
   }
 }

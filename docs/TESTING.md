@@ -1,7 +1,7 @@
 # Prueba en EU5 1.4
 
-El botón ya se ha visto dentro del juego. La apertura corregida en 0.1.1,
-la lectura de datos y la orden necesitan pruebas. Los tests de Python no
+El jugador ha confirmado botón, apertura y datos reales en el diseño anterior.
+La nueva interfaz 0.2 y la orden necesitan pruebas. Los 27 tests locales no
 ejecutan el motor de EU5.
 
 ## Instalación
@@ -23,21 +23,34 @@ enganche. No añadas ese archivo generado al repositorio público.
    Si ves un aviso de datos pendientes, cierra el panel y vuelve a abrirlo.
    Si el aviso permanece, comparte los errores de VVV del registro del juego.
 3. Comprueba que tu bando está abajo y el enemigo arriba.
-4. Compara los regimientos, cantidades y moral con la interfaz normal.
-5. Prueba el scroll con más de seis regimientos y más de un ejército.
+4. Comprueba que el título solo muestra el lugar y que los dos países tienen
+   sus banderas. Compara los totales por categoría con la interfaz normal y
+   con el tooltip de cada ficha. Las categorías vacías deben desaparecer.
+5. Prueba más de seis regimientos y más de un ejército: debe seguir habiendo
+   como máximo seis fichas por bando, sin scroll ni solapamientos. Comprueba
+   Línea, Cuña e Izquierda; solo debe cambiar la distribución propia visible.
 6. Repite actuando como defensor y con un aliado en tu bando.
-7. Comprueba que la vegetación/topografía del título corresponden a la localidad.
-   El fondo de esta alpha es esquemático y no cambia sus reglas según terreno.
+7. Comprueba vegetación/topografía y fondo en localidades distintas. La prioridad
+   visual es montaña, colinas/meseta, humedal, bosque, seco y llanura. El dibujo
+   es esquemático; no añade reglas de terreno.
+8. A la escala habitual de interfaz, verifica que cabecera, botones de formación,
+   fichas, orden y Cerrar caben completos. Prueba también una escala mayor.
+   La ventana mide 960×620 unidades de GUI; las pruebas geométricas no garantizan
+   su encaje con cualquier escala o resolución del juego.
 
 ## Orden real
 
 1. Pausa una batalla y anota la moral de un regimiento propio que no esté al máximo.
-2. Selecciónalo y ejecuta Reagrupar una vez.
+2. Pulsa la ficha de su categoría y comprueba el nombre del regimiento elegido
+   abajo. Se prioriza uno propio con moral incompleta y sin recuperación activa.
+   Anota los datos de ese regimiento y ejecuta Reagrupar una vez.
 3. Sin avanzar el tiempo, comprueba el cambio en su ficha y en los datos nativos.
 4. Verifica que el botón se desactiva y aparece el aviso de recuperación.
 5. El enemigo, otro regimiento propio y otro ejército en otra batalla deben
    mantener sus valores mientras el juego siga pausado.
-6. Cambia de selección y vuelve al primero: la recuperación debe persistir.
+6. Pulsa otra categoría y vuelve a la anterior: la recuperación del primer
+   regimiento debe persistir. Si hay otro disponible, la selección puede elegirlo;
+   comprueba siempre el nombre antes de emitir una orden.
 7. Tras siete días, comprueba que vuelve a estar disponible si aún puede recibirla.
 8. Un regimiento con moral completa, retirado, capturado o ajeno no debe recibirla.
 

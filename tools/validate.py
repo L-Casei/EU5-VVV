@@ -102,7 +102,7 @@ def validate(root: Path = ROOT) -> list[str]:
     if metadata["game_id"] != "eu5" or metadata["supported_game_version"] != "1.4.*":
         errors.append("Unexpected game target")
     gui = ""
-    for directory in ("in_game/gui", "in_game/common/scripted_guis", "in_game/common/scripted_triggers"):
+    for directory in ("in_game/gui", "in_game/common/scripted_guis", "in_game/common/scripted_triggers", "in_game/common/scripted_effects"):
         for path in (root / directory).glob("*"):
             if path.suffix not in {".gui", ".txt"}:
                 continue
@@ -140,6 +140,20 @@ def validate(root: Path = ROOT) -> list[str]:
         height, width = struct.unpack_from("<II", header, 12)
         if width % 4 or height % 4 or header[84:88] not in {b"DXT1", b"DXT5"}:
             errors.append(f"Unexpected DDS format/dimensions: {rel}")
+    # Terrain textures are selected by a validated data key at runtime, so their
+    # individual paths are not literal references in the generated GUI.
+    layout_path = root / 'design/battlefield.json'
+    if layout_path.is_file():
+        layout = json.loads(layout_path.read_text())
+        for style in layout['terrain_styles']:
+            rel = f'in_game/gfx/interface/vvv/terrain_{style}.dds'
+            path = root / rel
+            if not path.is_file():
+                errors.append(f'Missing terrain texture: {rel}')
+            else:
+                header = path.read_bytes()[:128]
+                if header[:4] != b'DDS ' or header[84:88] != b'DXT1':
+                    errors.append(f'Invalid terrain texture: {rel}')
     entry = (root / "in_game/gui/vvv_battle_button.gui").read_text(encoding="utf-8-sig")
     if re.search(r'^\s*(?:window|widget)\s*=\s*{', entry, re.M):
         errors.append("Battle entry must define a type, not a standalone HUD widget")

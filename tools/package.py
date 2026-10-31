@@ -14,7 +14,7 @@ def package(root: Path = ROOT, output: Path | None = None) -> Path:
     output = output or root / "dist" / f"EU5-VVV-{version}.zip"
     output.parent.mkdir(parents=True, exist_ok=True)
     files = []
-    for directory in (".metadata", "in_game", "tools", "docs"):
+    for directory in (".metadata", "in_game", "tools", "docs", "design"):
         files.extend(p for p in (root / directory).rglob("*") if p.is_file())
     files.extend(root / name for name in ("README.md", "Install-VVV.cmd"))
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:

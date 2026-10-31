@@ -1,0 +1,83 @@
+﻿# Current scope: a subunit from an active combat section. ROOT stays the issuer.
+vvv_take_formation_candidate = {
+    if = {
+        limit = {
+            owner = root
+            controller = root
+            sub_unit_category = scope:vvv_category
+            subunit_strength > 0
+            root = { NOT = { has_variable = vvv_selected_regiment } }
+        }
+        save_scope_as = vvv_formation_candidate
+        root = {
+            set_variable = { name = vvv_selected_regiment value = scope:vvv_formation_candidate }
+        }
+    }
+}
+
+# Current scope: one combat side. Inspect wounded regiments before a full one.
+vvv_take_ready_formation_candidate = {
+    save_scope_as = vvv_formation_candidate
+    if = {
+        limit = {
+            root = {
+                NOT = {
+                    is_key_in_variable_map = {
+                        name = vvv_rally_cooldowns
+                        target = scope:vvv_formation_candidate
+                    }
+                }
+            }
+        }
+        vvv_take_formation_candidate = yes
+    }
+}
+
+vvv_pick_ready_in_formation = {
+    every_center = { limit = { subunit_morale_percentage < 1 } vvv_take_ready_formation_candidate = yes }
+    every_left_flank = { limit = { subunit_morale_percentage < 1 } vvv_take_ready_formation_candidate = yes }
+    every_right_flank = { limit = { subunit_morale_percentage < 1 } vvv_take_ready_formation_candidate = yes }
+    every_reserves = { limit = { subunit_morale_percentage < 1 } vvv_take_ready_formation_candidate = yes }
+}
+
+vvv_pick_wounded_in_formation = {
+    every_center = { limit = { subunit_morale_percentage < 1 } vvv_take_formation_candidate = yes }
+    every_left_flank = { limit = { subunit_morale_percentage < 1 } vvv_take_formation_candidate = yes }
+    every_right_flank = { limit = { subunit_morale_percentage < 1 } vvv_take_formation_candidate = yes }
+    every_reserves = { limit = { subunit_morale_percentage < 1 } vvv_take_formation_candidate = yes }
+}
+
+vvv_pick_any_in_formation = {
+    every_center = { vvv_take_formation_candidate = yes }
+    every_left_flank = { vvv_take_formation_candidate = yes }
+    every_right_flank = { vvv_take_formation_candidate = yes }
+    every_reserves = { vvv_take_formation_candidate = yes }
+}
+
+# ROOT is a country. Only the backdrop style changes; no invented terrain
+# objects become native combat geometry. These are location data keys, not names.
+vvv_set_battlefield_style = {
+    set_variable = { name = vvv_terrain_style value = flag:plains }
+    scope:vvv_battle.location = {
+        if = {
+            limit = { OR = { topography = mountains topography = mountain_wasteland } }
+            root = { set_variable = { name = vvv_terrain_style value = flag:mountains } }
+        }
+        else_if = {
+            limit = { OR = { topography = hills topography = hills_wasteland topography = plateau } }
+            root = { set_variable = { name = vvv_terrain_style value = flag:hills } }
+        }
+        else_if = {
+            limit = { OR = { topography = wetlands topography = wetlands_wasteland } }
+            root = { set_variable = { name = vvv_terrain_style value = flag:wetlands } }
+        }
+        else_if = {
+            limit = { OR = { vegetation = woods vegetation = forest vegetation = jungle } }
+            root = { set_variable = { name = vvv_terrain_style value = flag:woods } }
+        }
+        else_if = {
+            limit = { OR = { vegetation = sparse topography = dune_wasteland topography = mesa_wasteland } }
+            root = { set_variable = { name = vvv_terrain_style value = flag:dry } }
+        }
+    }
+}

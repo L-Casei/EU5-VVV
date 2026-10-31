@@ -28,16 +28,40 @@ handle. Reopening from a different battle explicitly replaces the handle and
 clears selection. Until lifecycle behavior is verified, closing is explicit.
 If the captured battle ends, live data is hidden and the status message appears.
 
-The two sides are rendered through `CombatSide.GetUnits`, then `Unit.GetSubUnits`.
-These are real game handles. Cards are grouped by owning army and do not attempt
-to change the native flank assignment. Vertical scroll areas retain access to
-large armies and reinforcements. Displaying every regiment may need pagination
-or aggregation after performance is measured inside EU5.
+The standalone window is registered in `gui/scripted_widgets`. Saved regiment
+arguments to `GuiScope.AddScope` terminate with `GetSubUnit.MakeScope`; a bare
+`Scope.GetVariable` is a context promote and was rejected by the engine.
+
+The 960×620 canvas has a fixed 928×392 field and a clipped bottom order strip.
+Both sides use native `CombatSide.GetSubUnitCounts` aggregates, with one visible
+token for each of the six vanilla land categories. `GetTotal` supplies the troop
+total as native text, `GetCount` controls empty-category visibility and the
+native tooltip provides composition details. Counts include allied troops;
+order selection considers only regiments owned and controlled by the player.
+There are no scroll areas or per-regiment grids. Category glyphs distinguish
+roles, not every individual regiment definition within a category.
+
+`design/battlefield.json` supplies bounded positions for Line, Wedge and Left
+layouts. `tools.generate_gui` generates the GUI and the offline preview uses
+the same coordinates. The choice is client UI state, shared across opened
+boards during that session. These layouts rearrange friendly tokens only;
+there are no saved regiment coordinates and no native flank reassignment.
+
+Opening captures a terrain-style flag on the country from the combat location:
+mountains, hills/plateau, wetlands, woods/forest/jungle, dry or plains, in that
+priority order. The field texture is an original schematic backdrop. It does
+not claim to reproduce local terrain geometry or add terrain combat rules.
+Native country-flag widgets render the leading countries' flags. The header
+shows location, countries, strengths, topography and vegetation.
 
 ## Selection and order validation
 
-Selection passes the current battle and clicked regiment to a country-scoped
-scripted GUI. The selected subunit handle is stored on the issuing country.
+Selection passes the current battle and clicked category to a country-scoped
+scripted GUI. It scans active sections on both sides for an owned, controlled,
+positive-strength regiment of that category. It prefers missing morale without
+a rally cooldown, then any missing-morale regiment, then any active regiment.
+The selected subunit handle is stored on the issuing country. The order strip
+names that individual target; clicking the category does not issue a group order.
 It is revalidated against the currently open combat before showing command
 controls, so a selection from a different battle cannot receive an order there.
 
@@ -66,8 +90,8 @@ in-game check. Do not interpret the order as balanced gameplay yet.
 
 EU5 owns casualties, reinforcement, retreat and native combat resolution.
 VVV currently owns a captured combat handle, selection and a morale order.
-The board does not yet have persistent coordinates, pathfinding, arcs, ranges,
-terrain cells or tactical AI.
+The board does not yet have persistent regiment coordinates, free placement,
+pathfinding, arcs, ranges, terrain cells or tactical AI.
 
 Future board positions need an explicit, tested mapping to combat effects.
 Moving an icon must never be presented as a native regiment moving freely

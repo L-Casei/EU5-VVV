@@ -1,227 +1,625 @@
 ﻿types VVVTacticalBoardTypes
 {
-    type vvv_regiment_card = button {
-        using = button_common_template
+    type vvv_formation_token = widget {
         size = { 112 80 }
-        background = {
-            texture = "[Select_CString(CombatSide.IsPlayerInCombat, 'gfx/interface/vvv/card_blue.dds', 'gfx/interface/vvv/card_red.dds')]"
+        scissor = no
+        button = {
+            using = button_common_template
+            size = { 112 80 }
+            enabled = "[And(CombatSide.IsPlayerInCombat, GetScriptedGui('vvv_select_formation').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_category', SubUnitCombatCounts.GetCategory.MakeScope).End))]"
+            onclick = "[GetScriptedGui('vvv_select_formation').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_category', SubUnitCombatCounts.GetCategory.MakeScope).End)]"
+            tooltip = "[SubUnitCombatCounts.GetTooltip]"
+            tooltipwidget = { BasicFunctionalTooltip = {} }
         }
-        background = {
-            visible = "[EqualTo_string(SubUnit.GetKey, GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.GetKey)]"
-            texture = "gfx/interface/vvv/card_selected.dds"
-        }
-        enabled = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
-        onclick = "[GetScriptedGui('vvv_select_regiment').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
-        tooltip = "[SubUnit.GetUITooltip]"
-        tooltipwidget = { BasicFunctionalTooltip = {} }
         icon = {
-            position = { 8 8 }
-            size = { 26 26 }
-            texture = "[SubUnit.GetTypeIcon]"
+            position = { 32 0 }
+            size = { 48 48 }
+            alwaystransparent = yes
+            texture = "[Select_CString(CombatSide.IsPlayerInCombat, 'gfx/interface/vvv/token_blue.dds', 'gfx/interface/vvv/token_red.dds')]"
+        }
+        icon = {
+            position = { 28 -4 }
+            size = { 56 56 }
+            alwaystransparent = yes
+            visible = "[And(CombatSide.IsPlayerInCombat, ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.GetDefinition.GetCategory.Self))]"
+            texture = "gfx/interface/vvv/token_selected.dds"
+        }
+        icon = {
+            position = { 42 10 }
+            size = { 28 28 }
+            alwaystransparent = yes
+            block "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_pikes.dds" }
+        }
+        icon = {
+            position = { 0 46 }
+            size = { 112 34 }
+            alwaystransparent = yes
+            texture = "gfx/interface/vvv/token_plaque.dds"
         }
         text_single = {
-            position = { 37 8 }
-            size = { 68 26 }
+            position = { 0 49 }
+            size = { 112 20 }
+            layoutpolicy_horizontal = fixed
+            layoutpolicy_vertical = fixed
             autoresize = no
             align = center|nobaseline
-            fontsize = 20
-            text = "[SubUnit.GetStrength|0]"
+            fontsize = 18
+            alwaystransparent = yes
+            text = "[SubUnitCombatCounts.GetTotal]"
         }
         text_single = {
-            position = { 7 36 }
-            size = { 98 18 }
-            autoresize = no
-            align = center|nobaseline
-            fontsize = 12
-            text = "[SubUnit.GetTypeName]"
-        }
-        progressbar = {
-            position = { 10 59 }
-            size = { 92 6 }
-            using = progress_bar_green_red_alt
-            value = "[SubUnit.GetMoralePercent]"
-        }
-        text_single = {
-            position = { 7 65 }
-            size = { 98 12 }
+            position = { 0 69 }
+            size = { 112 11 }
+            layoutpolicy_horizontal = fixed
+            layoutpolicy_vertical = fixed
             autoresize = no
             align = center|nobaseline
             fontsize = 10
-            text = "[SubUnit.GetMoralePercent|0%]"
+            alwaystransparent = yes
+            block "vvv_formation_label" { text = "VVV_HEAVY_INFANTRY" }
         }
     }
 
-    type vvv_side_roster = widget {
-        size = { 752 206 }
-        text_single = {
-            position = { 0 0 }
-            size = { 742 23 }
-            autoresize = no
-            fontsize = 15
-            text = "[CombatSide.GetCountry.GetName] — [CombatSide.GetVisualStrength]"
-        }
-        scrollarea = {
-            position = { 0 27 }
-            size = { 752 179 }
-            scrollbarpolicy_horizontal = always_off
-            scrollwidget = {
-                vbox = {
-                    layoutpolicy_horizontal = expanding
-                    spacing = 8
-                    datamodel = "[CombatSide.GetUnits]"
-                    item = {
-                        vbox = {
-                            layoutpolicy_horizontal = expanding
-                            spacing = 3
-                            text_single = {
-                                size = { 720 18 }
-                                autoresize = no
-                                fontsize = 12
-                                text = "[Unit.GetName]"
-                            }
-                            fixedgridbox = {
-                                layoutpolicy_horizontal = expanding
-                                addcolumn = 122
-                                addcolumn = 122
-                                addcolumn = 122
-                                addcolumn = 122
-                                addcolumn = 122
-                                addcolumn = 122
-                                addrow = 86
-                                setitemsizefromcell = no
-                                datamodel = "[Unit.GetSubUnits]"
-                                item = { vvv_regiment_card = {} }
-                            }
-                        }
-                    }
+    type vvv_enemy_formation = widget {
+        size = { 960 620 }
+        alwaystransparent = yes
+
+        widget = {
+            name = "vvv_slot_enemy_light_infantry"
+            position = { 288 140 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_bow.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_INFANTRY" }
                 }
             }
-            scrollbar_vertical = { using = Scrollbar_Vertical }
+        }
+
+        widget = {
+            name = "vvv_slot_enemy_heavy_infantry"
+            position = { 424 226 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_pikes.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_enemy_light_cavalry"
+            position = { 96 204 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_light_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_enemy_heavy_cavalry"
+            position = { 752 204 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_heavy_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_enemy_artillery"
+            position = { 424 128 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_artillery').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_cannon.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_ARTILLERY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_enemy_auxiliary"
+            position = { 560 140 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_auxiliary').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_standard.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_AUXILIARY" }
+                }
+            }
         }
     }
-    # Instantiated from a variable-list item so the typed combat context is
-    # created when the handoff arrives, not cached while empty at game startup.
+    type vvv_friendly_formation_line = widget {
+        size = { 960 620 }
+        alwaystransparent = yes
+
+        widget = {
+            name = "vvv_slot_friendly_light_infantry"
+            position = { 288 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_bow.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_heavy_infantry"
+            position = { 424 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_pikes.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_light_cavalry"
+            position = { 96 336 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_light_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_heavy_cavalry"
+            position = { 752 336 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_heavy_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_artillery"
+            position = { 424 412 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_artillery').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_cannon.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_ARTILLERY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_auxiliary"
+            position = { 560 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_auxiliary').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_standard.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_AUXILIARY" }
+                }
+            }
+        }
+    }
+    type vvv_friendly_formation_wedge = widget {
+        size = { 960 620 }
+        alwaystransparent = yes
+
+        widget = {
+            name = "vvv_slot_friendly_light_infantry"
+            position = { 288 400 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_bow.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_heavy_infantry"
+            position = { 424 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_pikes.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_light_cavalry"
+            position = { 96 336 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_light_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_heavy_cavalry"
+            position = { 752 336 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_heavy_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_artillery"
+            position = { 424 412 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_artillery').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_cannon.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_ARTILLERY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_auxiliary"
+            position = { 560 400 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_auxiliary').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_standard.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_AUXILIARY" }
+                }
+            }
+        }
+    }
+    type vvv_friendly_formation_left = widget {
+        size = { 960 620 }
+        alwaystransparent = yes
+
+        widget = {
+            name = "vvv_slot_friendly_light_infantry"
+            position = { 96 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_bow.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_heavy_infantry"
+            position = { 232 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_infantry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_pikes.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_INFANTRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_light_cavalry"
+            position = { 752 390 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_light_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_light_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_LIGHT_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_heavy_cavalry"
+            position = { 368 314 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_heavy_cavalry').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_heavy_horse.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_HEAVY_CAVALRY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_artillery"
+            position = { 288 410 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_artillery').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_cannon.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_ARTILLERY" }
+                }
+            }
+        }
+
+        widget = {
+            name = "vvv_slot_friendly_auxiliary"
+            position = { 560 410 }
+            size = { 112 80 }
+            alwaystransparent = yes
+            datamodel = "[CombatSide.GetSubUnitCounts]"
+            item = {
+                vvv_formation_token = {
+                    visible = "[And(ObjectsEqual(SubUnitCombatCounts.GetCategory.Self, GetSubUnitCategory('army_auxiliary').Self), GreaterThan_int32(SubUnitCombatCounts.GetCount, '(int32)0'))]"
+                    blockoverride "vvv_formation_symbol" { texture = "gfx/interface/vvv/symbol_standard.dds" }
+                    blockoverride "vvv_formation_label" { text = "VVV_AUXILIARY" }
+                }
+            }
+        }
+    }
+
+    type vvv_matchup_side = widget {
+        size = { 310 40 }
+        scissor = yes
+        country_flag_small_plus = {
+            datacontext = "[CombatSide.GetCountry]"
+            position = { 0 0 }
+        }
+        text_single = {
+            position = { 66 0 } size = { 244 22 }
+            autoresize = no fontsize = 16
+            text = "[CombatSide.GetCountry.GetName]"
+        }
+        text_single = {
+            position = { 66 23 } size = { 244 17 }
+            autoresize = no fontsize = 13
+            text = "[CombatSide.GetVisualStrength]"
+        }
+    }
+
     type vvv_battle_content = widget {
-        size = { 1104 704 }
+        size = { 960 620 }
         alwaystransparent = yes
         visible = "[And3(Combat.IsActive, GetVariableSystem.HasValue('vvv_open_battle', Combat.GetKey), Or(Combat.GetAttacker.IsPlayerInCombat, Combat.GetDefender.IsPlayerInCombat))]"
-
+        icon = {
+            position = { 16 112 }
+            size = { 928 392 }
+            alwaystransparent = yes
+            texture = "[Concatenate('gfx/interface/vvv/terrain_', Concatenate(GetPlayer.MakeScope.GetVariable('vvv_terrain_style').GetFlagName, '.dds'))]"
+        }
         text_single = {
-            position = { 30 48 }
-            size = { 950 24 }
-            fontsize = 14
-            autoresize = no
-            text = "[Combat.GetName] · [Combat.GetLocation.GetTopography.GetName] · [Combat.GetLocation.GetVegetation.GetName]"
+            position = { 160 10 } size = { 640 28 }
+            autoresize = no align = center|nobaseline fontsize = 22
+            text = "[Combat.GetLocation.GetName]"
         }
-
         text_single = {
-            position = { 34 99 }
-            size = { 740 20 }
-            autoresize = no
-            fontsize = 12
-            text = "VVV_ENEMY"
+            position = { 355 37 } size = { 250 19 }
+            autoresize = no align = center|nobaseline fontsize = 12
+            text = "[Combat.GetLocation.GetTopography.GetNameWithNoTooltip] · [Combat.GetLocation.GetVegetation.GetNameWithNoTooltip]"
         }
-
-        vvv_side_roster = {
-            position = { 34 124 }
-            visible = "[Combat.GetAttacker.IsPlayerInCombat]"
-            datacontext = "[Combat.GetDefender]"
-        }
-
-        vvv_side_roster = {
-            position = { 34 124 }
-            visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
-            datacontext = "[Combat.GetAttacker]"
-        }
-
-        text_single = {
-            position = { 34 339 }
-            size = { 740 20 }
-            autoresize = no
-            align = center|nobaseline
-            fontsize = 12
-            text = "VVV_FIELD_CAPTION"
-        }
-
-        text_single = {
-            position = { 34 370 }
-            size = { 740 20 }
-            autoresize = no
-            fontsize = 12
-            text = "VVV_FRIENDLY"
-        }
-
-        vvv_side_roster = {
-            position = { 34 394 }
+        vvv_matchup_side = {
+            position = { 46 54 }
             visible = "[Combat.GetAttacker.IsPlayerInCombat]"
             datacontext = "[Combat.GetAttacker]"
         }
-
-        vvv_side_roster = {
-            position = { 34 394 }
+        vvv_matchup_side = {
+            position = { 46 54 }
             visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
             datacontext = "[Combat.GetDefender]"
         }
-
+        vvv_matchup_side = {
+            position = { 608 54 }
+            visible = "[Combat.GetAttacker.IsPlayerInCombat]"
+            datacontext = "[Combat.GetDefender]"
+        }
+        vvv_matchup_side = {
+            position = { 608 54 }
+            visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
+            datacontext = "[Combat.GetAttacker]"
+        }
         text_single = {
-            position = { 832 99 }
-            size = { 238 26 }
-            autoresize = no
-            fontsize = 18
-            text = "VVV_COMMAND"
+            position = { 440 57 } size = { 80 22 }
+            autoresize = no align = center|nobaseline fontsize = 16
+            text = "VVV_VERSUS"
+        }
+        vvv_enemy_formation = {
+            visible = "[Combat.GetAttacker.IsPlayerInCombat]"
+            datacontext = "[Combat.GetDefender]"
+        }
+        vvv_enemy_formation = {
+            visible = "[Not(Combat.GetAttacker.IsPlayerInCombat)]"
+            datacontext = "[Combat.GetAttacker]"
+        }
+        vvv_friendly_formation_line = {
+            visible = "[And(Combat.GetAttacker.IsPlayerInCombat, Not(Or(GetVariableSystem.HasValue('vvv_field_layout', 'wedge'), GetVariableSystem.HasValue('vvv_field_layout', 'left'))))]"
+            datacontext = "[Combat.GetAttacker]"
+        }
+        vvv_friendly_formation_line = {
+            visible = "[And(Not(Combat.GetAttacker.IsPlayerInCombat), Not(Or(GetVariableSystem.HasValue('vvv_field_layout', 'wedge'), GetVariableSystem.HasValue('vvv_field_layout', 'left'))))]"
+            datacontext = "[Combat.GetDefender]"
+        }
+        vvv_friendly_formation_wedge = {
+            visible = "[And(Combat.GetAttacker.IsPlayerInCombat, GetVariableSystem.HasValue('vvv_field_layout', 'wedge'))]"
+            datacontext = "[Combat.GetAttacker]"
+        }
+        vvv_friendly_formation_wedge = {
+            visible = "[And(Not(Combat.GetAttacker.IsPlayerInCombat), GetVariableSystem.HasValue('vvv_field_layout', 'wedge'))]"
+            datacontext = "[Combat.GetDefender]"
+        }
+        vvv_friendly_formation_left = {
+            visible = "[And(Combat.GetAttacker.IsPlayerInCombat, GetVariableSystem.HasValue('vvv_field_layout', 'left'))]"
+            datacontext = "[Combat.GetAttacker]"
+        }
+        vvv_friendly_formation_left = {
+            visible = "[And(Not(Combat.GetAttacker.IsPlayerInCombat), GetVariableSystem.HasValue('vvv_field_layout', 'left'))]"
+            datacontext = "[Combat.GetDefender]"
+        }
+        button = {
+            using = button_regular_texture
+            using = button_common_template
+            position = { 368 81 } size = { 74 22 }
+            text = "VVV_LAYOUT_LINE"
+            onclick = "[GetVariableSystem.Set('vvv_field_layout', 'line')]"
+            tooltip = "VVV_LAYOUT_TT"
+            tooltipwidget = { BasicFunctionalTooltip = {} }
+        }
+        button = {
+            using = button_regular_texture
+            using = button_common_template
+            position = { 446 81 } size = { 74 22 }
+            text = "VVV_LAYOUT_WEDGE"
+            onclick = "[GetVariableSystem.Set('vvv_field_layout', 'wedge')]"
+            tooltip = "VVV_LAYOUT_TT"
+            tooltipwidget = { BasicFunctionalTooltip = {} }
+        }
+        button = {
+            using = button_regular_texture
+            using = button_common_template
+            position = { 524 81 } size = { 74 22 }
+            text = "VVV_LAYOUT_LEFT"
+            onclick = "[GetVariableSystem.Set('vvv_field_layout', 'left')]"
+            tooltip = "VVV_LAYOUT_TT"
+            tooltipwidget = { BasicFunctionalTooltip = {} }
         }
 
-        vbox = {
-            position = { 832 142 }
-            size = { 238 380 }
-            spacing = 12
-            # GetVariable is a context promote, not a terminal data function.
-            # Resolve the typed regiment and return its Scope for AddScope.
-            visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End))]"
-            text_multi = {
-                layoutpolicy_horizontal = expanding
-                autoresize = yes
-                text = "VVV_SELECT_HINT"
-            }
-        }
-
-        vbox = {
-            position = { 832 142 }
-            size = { 238 410 }
-            spacing = 12
-            visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End)]"
-            datacontext = "[GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit]"
-            text_multi = {
-                layoutpolicy_horizontal = expanding
-                autoresize = yes
-                fontsize = 18
-                text = "[SubUnit.GetNameWithNoTooltip]"
+        widget = {
+            name = "vvv_order_strip"
+            position = { 16 516 } size = { 928 88 }
+            scissor = yes
+            text_single = {
+                position = { 14 12 } size = { 860 22 }
+                autoresize = no fontsize = 14
+                visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End))]"
+                text = "VVV_FORMATION_HINT"
             }
             text_single = {
-                size = { 238 24 }
-                autoresize = no
-                text = "[SubUnit.GetStrength|0] · [SubUnit.GetMoralePercent|0%]"
+                position = { 14 43 } size = { 860 18 }
+                autoresize = no fontsize = 12
+                visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End))]"
+                text = "VVV_FORMATION_LEGEND"
             }
-            button = {
-                using = button_regular_texture
-                using = button_common_template
-                size = { 238 43 }
-                text = "VVV_RALLY"
-                enabled = "[GetScriptedGui('vvv_rally_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
-                onclick = "[GetScriptedGui('vvv_rally_regiment').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
-                tooltip = "VVV_RALLY_TT"
-                tooltipwidget = { BasicFunctionalTooltip = {} }
-            }
-            text_multi = {
-                layoutpolicy_horizontal = expanding
-                autoresize = yes
-                text = "VVV_RALLY_EFFECT"
-            }
-            text_multi = {
-                visible = "[GetPlayer.MakeScope.GetVariableFromVariableMap('vvv_rally_cooldowns', SubUnit.MakeScope).IsSet]"
-                layoutpolicy_horizontal = expanding
-                autoresize = yes
-                text = "VVV_RALLY_COOLDOWN"
+            widget = {
+                size = { 928 88 }
+                alwaystransparent = yes
+                visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End)]"
+                datacontext = "[GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit]"
+                text_single = {
+                    position = { 14 9 } size = { 372 22 }
+                    autoresize = no fontsize = 15
+                    text = "[SubUnit.GetNameWithNoTooltip]"
+                    tooltip = "[SubUnit.GetUITooltip]"
+                    tooltipwidget = { BasicFunctionalTooltip = {} }
+                }
+                text_single = {
+                    position = { 14 35 } size = { 372 19 }
+                    autoresize = no fontsize = 12
+                    text = "[SubUnit.GetStrength|0] · [SubUnit.GetTypeName]"
+                }
+                text_single = {
+                    position = { 14 58 } size = { 372 17 }
+                    autoresize = no fontsize = 11
+                    text = "[SubUnit.GetMoraleLabel]"
+                }
+                button = {
+                    using = button_regular_texture
+                    using = button_common_template
+                    position = { 406 22 } size = { 154 38 }
+                    text = "VVV_RALLY"
+                    enabled = "[GetScriptedGui('vvv_rally_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
+                    onclick = "[GetScriptedGui('vvv_rally_regiment').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', SubUnit.MakeScope).End)]"
+                    tooltip = "VVV_RALLY_TT"
+                    tooltipwidget = { BasicFunctionalTooltip = {} }
+                }
+                text_single = {
+                    position = { 584 13 } size = { 326 20 }
+                    autoresize = no fontsize = 13
+                    text = "VVV_RALLY_SHORT"
+                }
+                text_single = {
+                    position = { 584 43 } size = { 326 19 }
+                    autoresize = no fontsize = 12
+                    visible = "[GetPlayer.MakeScope.GetVariableFromVariableMap('vvv_rally_cooldowns', SubUnit.MakeScope).IsSet]"
+                    text = "VVV_RALLY_RECOVERING"
+                }
             }
         }
     }
@@ -232,60 +630,40 @@ window = {
     layer = top
     parentanchor = center
     widgetanchor = center
-    size = { 1104 704 }
+    size = { 960 620 }
     movable = yes
     resizable = no
-    allow_outside = yes
+    allow_outside = no
+    scissor = yes
     filter_mouse = all
-    # Opening the shell is client-only and never waits for a script result.
     visible = "[GetVariableSystem.Exists('vvv_open_battle')]"
-    background = { texture = "gfx/interface/vvv/command_board.dds" }
-
-    text_single = {
-        position = { 28 14 }
-        size = { 790 30 }
-        fontsize = 23
-        autoresize = no
-        text = "VVV_BOARD_TITLE"
+    icon = {
+        size = { 960 620 }
+        alwaystransparent = yes
+        texture = "gfx/interface/vvv/battle_frame.dds"
     }
-
+    widget = {
+        name = "vvv_live_battle_model"
+        size = { 960 620 }
+        alwaystransparent = yes
+        datamodel = "[GetPlayer.MakeScope.GetList('vvv_board_battles')]"
+        item = { vvv_battle_content = { datacontext = "[Scope.GetCombat]" } }
+    }
+    widget = {
+        name = "vvv_battle_handoff_status"
+        position = { 64 170 } size = { 832 160 }
+        scissor = yes
+        visible = "[Not(And3(GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.IsActive, GetVariableSystem.HasValue('vvv_open_battle', GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetKey), Or(GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetAttacker.IsPlayerInCombat, GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetDefender.IsPlayerInCombat)))]"
+        text_multi = {
+            size = { 820 140 } autoresize = no fontsize = 16
+            text = "VVV_WAITING_BATTLE"
+        }
+    }
     button = {
         using = button_regular_texture
         using = button_common_template
-        position = { 1018 19 }
-        size = { 60 31 }
+        position = { 860 12 } size = { 76 28 }
         text = "VVV_CLOSE"
         onclick = "[GetVariableSystem.Clear('vvv_open_battle')]"
-    }
-
-    text_multi = {
-        position = { 32 634 }
-        size = { 1036 48 }
-        autoresize = no
-        fontsize = 13
-        text = "VVV_ALPHA_SCOPE"
-    }
-
-    widget = {
-        name = "vvv_live_battle_model"
-        size = { 1104 704 }
-        alwaystransparent = yes
-        datamodel = "[GetPlayer.MakeScope.GetList('vvv_board_battles')]"
-        item = {
-            vvv_battle_content = { datacontext = "[Scope.GetCombat]" }
-        }
-    }
-
-    widget = {
-        name = "vvv_battle_handoff_status"
-        position = { 40 150 }
-        size = { 730 330 }
-        visible = "[Not(And3(GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.IsActive, GetVariableSystem.HasValue('vvv_open_battle', GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetKey), Or(GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetAttacker.IsPlayerInCombat, GetPlayer.MakeScope.GetVariable('vvv_current_battle').GetCombat.GetDefender.IsPlayerInCombat)))]"
-        text_multi = {
-            size = { 710 150 }
-            autoresize = no
-            fontsize = 18
-            text = "VVV_WAITING_BATTLE"
-        }
     }
 }

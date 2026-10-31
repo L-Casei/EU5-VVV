@@ -1,0 +1,33 @@
+{
+  "canvas": [960, 620],
+  "field": [16, 112, 928, 392],
+  "orders": [16, 516, 928, 88],
+  "token": [112, 80],
+  "enemy_mirror_line": 310,
+  "roles": [
+    {"key": "light_infantry", "category": "army_light_infantry", "icon": "bow", "label": "VVV_LIGHT_INFANTRY", "enemy": [288, 140]},
+    {"key": "heavy_infantry", "category": "army_heavy_infantry", "icon": "pikes", "label": "VVV_HEAVY_INFANTRY", "enemy": [424, 226]},
+    {"key": "light_cavalry", "category": "army_light_cavalry", "icon": "light_horse", "label": "VVV_LIGHT_CAVALRY", "enemy": [96, 204]},
+    {"key": "heavy_cavalry", "category": "army_heavy_cavalry", "icon": "heavy_horse", "label": "VVV_HEAVY_CAVALRY", "enemy": [752, 204]},
+    {"key": "artillery", "category": "army_artillery", "icon": "cannon", "label": "VVV_ARTILLERY", "enemy": [424, 128]},
+    {"key": "auxiliary", "category": "army_auxiliary", "icon": "standard", "label": "VVV_AUXILIARY", "enemy": [560, 140]}
+  ],
+  "terrain_styles": ["plains", "hills", "mountains", "woods", "dry", "wetlands"],
+  "formations": [
+    {"key": "line", "label": "VVV_LAYOUT_LINE", "friendly": {
+      "light_infantry": [288, 314], "heavy_infantry": [424, 314],
+      "light_cavalry": [96, 336], "heavy_cavalry": [752, 336],
+      "artillery": [424, 412], "auxiliary": [560, 314]
+    }},
+    {"key": "wedge", "label": "VVV_LAYOUT_WEDGE", "friendly": {
+      "light_infantry": [288, 400], "heavy_infantry": [424, 314],
+      "light_cavalry": [96, 336], "heavy_cavalry": [752, 336],
+      "artillery": [424, 412], "auxiliary": [560, 400]
+    }},
+    {"key": "left", "label": "VVV_LAYOUT_LEFT", "friendly": {
+      "light_infantry": [96, 314], "heavy_infantry": [232, 314],
+      "light_cavalry": [752, 390], "heavy_cavalry": [368, 314],
+      "artillery": [288, 410], "auxiliary": [560, 410]
+    }}
+  ]
+}

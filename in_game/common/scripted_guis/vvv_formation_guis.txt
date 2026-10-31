@@ -1,0 +1,40 @@
+﻿# A field token represents the whole category. The existing rally order still
+# targets one explicitly named regiment, prioritising a wounded own regiment.
+vvv_select_formation = {
+    scope = country
+    saved_scopes = { vvv_battle vvv_category }
+    is_shown = { always = yes }
+    is_valid = {
+        vvv_can_open_battle = yes
+        is_multiplayer_session = no
+        exists = scope:vvv_category
+    }
+    effect = {
+        if = {
+            limit = {
+                vvv_can_open_battle = yes
+                is_multiplayer_session = no
+                exists = scope:vvv_category
+            }
+            remove_variable = vvv_selected_regiment
+            scope:vvv_battle = {
+                combat_attacker = { vvv_pick_ready_in_formation = yes }
+                combat_defender = { vvv_pick_ready_in_formation = yes }
+            }
+            if = {
+                limit = { NOT = { has_variable = vvv_selected_regiment } }
+                scope:vvv_battle = {
+                    combat_attacker = { vvv_pick_wounded_in_formation = yes }
+                    combat_defender = { vvv_pick_wounded_in_formation = yes }
+                }
+            }
+            if = {
+                limit = { NOT = { has_variable = vvv_selected_regiment } }
+                scope:vvv_battle = {
+                    combat_attacker = { vvv_pick_any_in_formation = yes }
+                    combat_defender = { vvv_pick_any_in_formation = yes }
+                }
+            }
+        }
+    }
+}

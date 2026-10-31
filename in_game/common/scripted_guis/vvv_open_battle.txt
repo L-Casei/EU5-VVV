@@ -9,6 +9,7 @@ vvv_open_battle = {
         if = {
             limit = { vvv_can_open_battle = yes }
             set_variable = { name = vvv_current_battle value = scope:vvv_battle }
+            vvv_set_battlefield_style = yes
             clear_variable_list = vvv_board_battles
             add_to_variable_list = {
                 name = vvv_board_battles

@@ -1,6 +1,6 @@
 # Technical references
 
-Research date: 2026-10-30. These are references, not VVV dependencies.
+Research dates: 2026-10-30–31. These are references, not VVV dependencies.
 
 - [EU5 Modding Co-op: generated script/API documentation](https://github.com/Europa-Universalis-5-Modding-Co-op/modding-digests/tree/main/current_docs).
   Names checked: `BattleView.GetCombat`, `Combat.MakeScope`, `CombatSide.GetUnits`,
@@ -29,6 +29,17 @@ Research date: 2026-10-30. These are references, not VVV dependencies.
 VVV contains original UI layout, artwork, scripts and tools. Its small synthetic
 test fixtures describe layout structure and are not complete vanilla GUI files.
 
+For the 0.2 board, the same exported data types establish
+`CombatSide.GetSubUnitCounts`, `SubUnitCombatCounts.GetCategory/GetCount/GetTotal`,
+category `MakeScope`, `ObjectsEqual`, and location topography/vegetation names.
+The native GUI files inspected as references include `combat_templates.gui`
+(category totals) and `coat_of_arms.gui` (`country_flag_small_plus`, 54×36).
+Vanilla 1.4 category and location definitions supplied the six land-category
+keys and unprefixed topography/vegetation keys. Those files are not bundled.
+Active section iteration and the `sub_unit_category` scope link are described
+in the exported effects and event-target documentation. New selection and
+terrain scripts still require runtime validation.
+
 ## Evidence limits
 
 The standalone board registration follows the independent window registration
@@ -40,12 +51,13 @@ The board load fix also uses the [exported script data types](https://github.com
 `Scope.GetVariable` and `Scope.GetSubUnit` are promotes, whereas
 `SubUnit.MakeScope` is a function returning `Scope`. Local `error.log` rejected
 the two bare `GetVariable` arguments to `AddScope`; the fix terminates those
-arguments with `GetSubUnit.MakeScope`. Runtime confirmation remains pending.
+arguments with `GetSubUnit.MakeScope`. The player subsequently confirmed that
+the board opens and displays real troops after these fixes.
 
 The published export snapshot may reflect a later 1.4 hotfix than the user's
 installation. An identifier appearing in a dump establishes availability in that
 snapshot; it does not establish lifecycle safety, scope round-trip behavior,
 rendering, ordering, performance or semantics in a running game.
 
-The generated board preview uses example values and a neutral schematic field.
+The generated board previews use example values and schematic terrain drawings.
 It is not a screenshot and does not demonstrate game integration.

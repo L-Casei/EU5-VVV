@@ -1,33 +1,43 @@
 # Veni, Vidi, Vici — EU5
 
-**Target: Europa Universalis V 1.4.x · Version: 0.1.1-alpha**
+**Target: Europa Universalis V 1.4.x · Version: 0.2.0-alpha**
 
 VVV aims to add a 2D command board opened **from the active battle window**.
 Orders on the board act on the regiments participating in that battle; EU5's
 normal battle view and native combat continue to exist.
 
-This is an integration alpha. **The battle button has been confirmed in EU5.**
-The command board and rally order still need in-game validation. Static checks
-and installer tests cannot establish rendering or combat behavior.
+This is an integration alpha. **The battle button, board opening and live troop
+data have been confirmed by the player in EU5.** The redesigned 0.2 board and
+rally order still need in-game validation. Static checks and installer tests
+cannot establish rendering or combat behavior.
 
-## Actualización 0.1.1: botón sin respuesta
+## Actualización 0.2: campo de batalla sin scroll
 
-La apertura del marco ya no depende de recibir antes los datos del combate.
-El botón solicita primero la ventana y después captura la batalla. Si falla
-esa captura, el panel muestra un mensaje en lugar de quedarse invisible.
-Los datos se crean desde una lista de referencias de combate y la recuperación
-de Reagrupar se guarda en el país, con una entrada por regimiento.
+Ventana de 960×620, con el lugar de la batalla como título, los dos bandos con
+sus banderas nativas y un fondo derivado del terreno de la localidad. Las
+órdenes ocupan una franja inferior acotada. Se conservan los arreglos de
+registro de la ventana y de captura del combate de la última actualización.
+
+Las tropas se agrupan en seis fichas por bando: infantería ligera y pesada,
+caballería ligera y pesada, artillería y apoyo. Cada ficha suma los efectivos
+reales de su categoría y tiene un símbolo propio. No hay listas desplazables.
+Los botones **Línea, Cuña e Izquierda** cambian la distribución visual propia.
+Todavía no modifican las posiciones ni los cálculos del combate nativo.
 
 Para actualizar: cierra EU5, descarga el ZIP nuevo, extráelo y vuelve a ejecutar
-`Install-VVV.cmd` desde esa copia. Después reinicia el juego. El siguiente paso
-es comprobar que el clic abre el marco y que las tropas aparecen dentro.
+`Install-VVV.cmd` desde esa copia. Después reinicia el juego y comprueba el
+encaje visual, las banderas, los totales y la selección.
 
 ## Qué incorpora esta primera versión
 
 - Tipo de botón **Mando táctico** insertado en el contenido de la ventana de batalla.
-- Panel 2D central, enemigo arriba y fuerzas propias abajo, leyendo los ejércitos
-  y regimientos de `BattleView.GetCombat`, sin ejércitos de ejemplo en los archivos del juego.
-- Fichas con tipo, fuerza y moral; selección de un regimiento propio.
+- Panel 2D central, enemigo arriba y fuerzas propias abajo, leyendo el combate
+  real capturado desde `BattleView.GetCombat`.
+- Fichas por categoría con totales reales, iconos y detalles nativos al pasar
+  el cursor; fondos de llanura, colinas, montaña, bosque, terreno seco y humedal.
+- Al pulsar una ficha propia se elige un regimiento de esa categoría: primero
+  uno con moral incompleta y disponible para Reagrupar; después uno herido o
+  cualquier regimiento activo. Su nombre, tipo y moral aparecen abajo.
 - Orden experimental **Reagrupar**: `+0,10` de moral al regimiento seleccionado,
   con recuperación de siete días por regimiento y validación de dueño,
   controlador, batalla y participación activa.
@@ -36,8 +46,8 @@ es comprobar que el clic abre el marco y que las tropas aparecen dentro.
 - Español e inglés. Sin dependencias de otros mods.
 
 **Todavía no incluye movimiento, orientación, cargas, envolvimientos, terreno
-táctico funcional, doctrinas, rasgos nuevos ni IA de órdenes.** La distribución
-de fichas es una lista esquemática, no posiciones militares simuladas. La orden
+táctico funcional, doctrinas, rasgos nuevos ni IA de órdenes.** Las formaciones
+son distribuciones esquemáticas, no posiciones militares simuladas. La orden
 de moral es una prueba del enlace con el combate, no el sistema táctico final.
 Las órdenes de esta alpha se desactivan en multijugador.
 
@@ -54,8 +64,9 @@ Las órdenes de esta alpha se desactivan en multijugador.
 5. Activa **Veni, Vidi, Vici — Tactical Command** en el gestor de mods y reinicia EU5.
 6. En una partida de prueba individual, abre una batalla terrestre propia.
    Busca **Mando táctico** en la parte superior del contenido de su ventana.
-7. Abre el tablero, selecciona una ficha propia con moral inferior al máximo
-   y prueba **Reagrupar**. Comprueba el resultado siguiendo [esta guía](docs/TESTING.md).
+7. Abre el tablero y selecciona una ficha azul. Comprueba el regimiento indicado
+   abajo antes de pulsar **Reagrupar**. La orden afecta a ese regimiento, no a
+   toda la categoría. Sigue [esta guía](docs/TESTING.md).
 
 Si el marco muestra un aviso de datos pendientes, ciérralo y vuelve a abrirlo.
 Si continúa, comparte el fragmento de `error.log` relacionado con VVV. En esta
@@ -96,8 +107,12 @@ Para regenerar las texturas originales y la maqueta:
 
 ```bash
 python -m pip install "Pillow>=11.3"
-python -m tools.build_assets --preview
+python -m tools.generate_gui
+python -m tools.build_battlefield_art --preview
 ```
+
+El plano compartido está en `design/battlefield.json`; genera la GUI después
+de cambiarlo. Pillow solo se necesita para regenerar los dibujos y maquetas.
 
 Python es una herramienta de instalación y desarrollo; no se ejecuta dentro de
 EU5. Los cambios de juego se implementan con GUI y scripts nativos de EU5.
