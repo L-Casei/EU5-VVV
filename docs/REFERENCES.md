@@ -31,6 +31,17 @@ test fixtures describe layout structure and are not complete vanilla GUI files.
 
 ## Evidence limits
 
+The standalone board registration follows the independent window registration
+in [CMF's example mod](https://github.com/Europa-Universalis-5-Modding-Co-op/community-mod-framework/blob/main/submods/cmf-example-mod/in_game/gui/scripted_widgets/cmf_example_scripted_widgets.txt).
+VVV supplies its own `gui/scripted_widgets/vvv_scripted_widgets.txt`; CMF is
+not a dependency.
+
+The board load fix also uses the [exported script data types](https://github.com/Europa-Universalis-5-Modding-Co-op/modding-digests/blob/main/current_docs/data_types_script.txt):
+`Scope.GetVariable` and `Scope.GetSubUnit` are promotes, whereas
+`SubUnit.MakeScope` is a function returning `Scope`. Local `error.log` rejected
+the two bare `GetVariable` arguments to `AddScope`; the fix terminates those
+arguments with `GetSubUnit.MakeScope`. Runtime confirmation remains pending.
+
 The published export snapshot may reflect a later 1.4 hotfix than the user's
 installation. An identifier appearing in a dump establishes availability in that
 snapshot; it does not establish lifecycle safety, scope round-trip behavior,

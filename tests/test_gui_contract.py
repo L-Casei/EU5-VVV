@@ -2,10 +2,29 @@
 import json
 from pathlib import Path
 import unittest
+import tempfile
 
-from tools.validate import scope_storage_errors, shell_opening_errors
+from tools.validate import scope_storage_errors, shell_opening_errors, gui_scope_argument_errors, board_registration_errors, validate
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class BoardRegistrationTests(unittest.TestCase):
+    def test_definition_alone_is_not_registered(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            gui = root / 'in_game/gui'
+            gui.mkdir(parents=True)
+            (gui / 'vvv_tactical_board.gui').write_text('window = { name = "vvv_tactical_board" }')
+            self.assertTrue(board_registration_errors(root))
+            registry = gui / 'scripted_widgets/vvv_scripted_widgets.txt'
+            registry.parent.mkdir()
+            registry.write_text('gui/vvv_tactical_board.gui = wrong_name\n')
+            self.assertTrue(board_registration_errors(root))
+            registry.write_text('gui/vvv_tactical_board.gui = vvv_tactical_board\n')
+            self.assertEqual(board_registration_errors(root), [])
+            (gui / 'vvv_tactical_board.gui').write_text('window = { name = "renamed_board" }')
+            self.assertTrue(board_registration_errors(root))
 
 
 class OpeningContractTests(unittest.TestCase):
@@ -38,6 +57,23 @@ class OpeningContractTests(unittest.TestCase):
             }
         }'''
         self.assertTrue(shell_opening_errors(shell))
+
+
+class GuiScopeArgumentTests(unittest.TestCase):
+    def test_log_reported_malformed_argument_is_rejected(self):
+        old = '''widget = {
+            visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End)]"
+        }'''
+        self.assertEqual(len(gui_scope_argument_errors(old)), 1)
+
+    def test_typed_handle_round_trip_is_accepted(self):
+        fixed = '''widget = {
+            visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End)]"
+        }'''
+        self.assertEqual(gui_scope_argument_errors(fixed), [])
+
+    def test_shipped_assets_pass_validation(self):
+        self.assertEqual(validate(ROOT), [])
 
 
 class ScopeStorageContractTests(unittest.TestCase):

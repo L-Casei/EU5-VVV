@@ -1,3 +1,20 @@
+# Unreleased — board registration fix (2026-10-31)
+
+- Register `vvv_tactical_board` in `gui/scripted_widgets`. The standalone
+  definition was parsed but never registered for creation in the in-game UI.
+- Validate the registration, target file and window name, and verify that
+  installation includes the registration. The previous expression fix alone
+  did not resolve the missing window. Runtime confirmation remains pending.
+
+# Unreleased — board load fix
+
+- Fix the two selection visibility expressions that EU5 rejected as malformed
+  tokens in `error.log` at 21:46:07 on 2026-10-30. `Scope.GetVariable` is a
+  context promote, not a terminal data function: resolve `GetSubUnit.MakeScope`
+  before passing the saved regiment to `GuiScope.AddScope`.
+- Add validation and regression coverage for the rejected argument form.
+- Static validation only; the game was not started for this fix.
+
 # 0.1.1-alpha
 
 - Make the board shell open from client UI state before the scripted combat

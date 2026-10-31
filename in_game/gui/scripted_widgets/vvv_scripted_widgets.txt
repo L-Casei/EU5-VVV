@@ -1,0 +1,1 @@
+gui/vvv_tactical_board.gui = vvv_tactical_board

@@ -33,6 +33,21 @@ def scope_storage_errors(text: str, contract: dict) -> list[str]:
     return errors
 
 
+def gui_scope_argument_errors(text: str) -> list[str]:
+    """EU5 GetVariable is a promote; it cannot terminate an AddScope argument.
+
+    This form produces a malformed token and prevents the board loading.
+    Downcast the saved handle and use its MakeScope function instead.
+    """
+    expressions = [t.value for t in blocks(text)[0] if t.value.startswith('"[')]
+    invalid = re.compile(
+        r"\.AddScope\(\s*'[^']+'\s*,\s*[^\n]*?"
+        r"\.GetVariable\(\s*'[^']+'\s*\)\s*\)"
+    )
+    return ["AddScope argument ends in GetVariable promote; use a typed MakeScope"
+            for expression in expressions if invalid.search(expression)]
+
+
 def shell_opening_errors(text: str) -> list[str]:
     """The board shell must be renderable before any game-state handoff."""
     ts, parsed = blocks(text)
@@ -60,8 +75,28 @@ def shell_opening_errors(text: str) -> list[str]:
     return errors
 
 
+def board_registration_errors(root: Path) -> list[str]:
+    """A parsed standalone window still needs a scripted_widgets registration."""
+    expected = ("gui/vvv_tactical_board.gui", "vvv_tactical_board")
+    registrations = []
+    for path in (root / "in_game/gui/scripted_widgets").glob("*.txt"):
+        text = path.read_text(encoding="utf-8-sig")
+        registrations.extend(re.findall(r"^\s*([^#\s=]+)\s*=\s*([^#\s]+)\s*(?:#.*)?$", text, re.M))
+    if registrations.count(expected) != 1:
+        return ["Tactical board needs exactly one scripted_widgets registration"]
+    path = root / "in_game" / expected[0]
+    if not path.is_file():
+        return ["Registered tactical board GUI file is missing"]
+    ts, parsed = blocks(path.read_text(encoding="utf-8-sig"))
+    matches = [b for b in parsed if b.parent is None and b.key == "window"
+               and any(t.value.strip('"') == expected[1]
+                       for t in direct_fields(ts, b).get("name", []))]
+    return [] if len(matches) == 1 else ["Registered tactical board window name does not match"]
+
+
 def validate(root: Path = ROOT) -> list[str]:
     errors = []
+    errors.extend(board_registration_errors(root))
     contract = json.loads((root / "docs/api-scope-storage.json").read_text(encoding="utf-8"))
     metadata = json.loads((root / ".metadata/metadata.json").read_text(encoding="utf-8-sig"))
     if metadata["game_id"] != "eu5" or metadata["supported_game_version"] != "1.4.*":
@@ -78,6 +113,7 @@ def validate(root: Path = ROOT) -> list[str]:
                     errors.extend(f"{path}: {e}" for e in scope_storage_errors(text, contract))
                 else:
                     errors.extend(f"{path}: {e}" for e in shell_opening_errors(text))
+                    errors.extend(f"{path}: {e}" for e in gui_scope_argument_errors(text))
             except ValueError as exc:
                 errors.append(f"{path}: {exc}")
             if path.suffix == ".gui":

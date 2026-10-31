@@ -82,6 +82,8 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(self.source.read_bytes(), before)
         self.assertIn(BEGIN, (self.target / GUI_REL).read_text(encoding='utf-8-sig'))
         self.assertTrue((self.target / '.metadata/metadata.json').is_file())
+        registration = Path('in_game/gui/scripted_widgets/vvv_scripted_widgets.txt')
+        self.assertEqual((self.target / registration).read_bytes(), (ROOT / registration).read_bytes())
         metadata = json.loads((self.target / '.metadata/metadata.json').read_text(encoding='utf-8-sig'))
         manifest = json.loads((self.target / MANIFEST).read_text())
         self.assertEqual(manifest['version'], metadata['version'])

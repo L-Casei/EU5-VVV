@@ -175,7 +175,9 @@
             position = { 832 142 }
             size = { 238 380 }
             spacing = 12
-            visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End))]"
+            # GetVariable is a context promote, not a terminal data function.
+            # Resolve the typed regiment and return its Scope for AddScope.
+            visible = "[Not(GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End))]"
             text_multi = {
                 layoutpolicy_horizontal = expanding
                 autoresize = yes
@@ -187,7 +189,7 @@
             position = { 832 142 }
             size = { 238 410 }
             spacing = 12
-            visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment')).End)]"
+            visible = "[GetScriptedGui('vvv_select_regiment').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('vvv_battle', Combat.MakeScope).AddScope('vvv_regiment', GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit.MakeScope).End)]"
             datacontext = "[GetPlayer.MakeScope.GetVariable('vvv_selected_regiment').GetSubUnit]"
             text_multi = {
                 layoutpolicy_horizontal = expanding
